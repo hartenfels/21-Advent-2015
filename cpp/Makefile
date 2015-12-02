@@ -1,7 +1,7 @@
 test: compile
-	LD_LIBRARY_PATH=. prove -e perl6 cpp.t
+	LD_LIBRARY_PATH=. PERL6LIB=. prove -e perl6 cpp.t
 
-compile: cpptest.so cpptest-extern-c.so
+compile: cpptest.so cpptest-extern-c.so intvec.so
 
 %.so: %.cpp
 	g++ -Wall -Wextra -Wshadow -std=c++98 -pedantic -pedantic-errors $< -shared -g -o $@ -fPIC
