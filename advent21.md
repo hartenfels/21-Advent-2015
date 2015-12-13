@@ -1,10 +1,111 @@
 # Day 21
 
+TODO: Introduction
+
 
 ## Callbacks
 
+TODO yadda yadda introduction function pointers etc.
+
+Let's take [the Expat XML library](http://expat.sourceforge.net/) as an
+example, which we want to use to parse this riveting XML document:
+
+```XML
+<calendar>
+    <advent day="21">
+        <topic title="NativeCall Bits and Pieces"/>
+    </advent>
+</calendar>
+```
+
+The Expat XML parser takes callbacks that are called whenever it finds and
+opening or closing XML tag. You tell it which callbacks to use with the
+following function:
+
+```c
+XML_SetElementHandler(XML_Parser parser,
+                      void (*start)(void *userdata, char *name, char **attrs),
+                      void (*end)(void* userdata, char *name));
+```
+
+It associates the given parser with two function pointers to the start and end
+tag handlers. Turning this into a Perl 6 NativeCall subroutine is
+straight-forward:
+
+```Perl6
+use NativeCall;
+
+sub XML_SetElementHandler(OpaquePointer $parser,
+                          &start (OpaquePointer, Str, CArray[Str]),
+                          &end   (OpaquePointer, Str))
+    is native('libexpat') { ... }
+```
+
+As you can see, the function pointers turn into arguments with the `&` sigil,
+followed by their signature. The space between the name and the signature is
+required, but you'll get an awesome error message if you forget.
+
+Now we'll just define the callbacks to use, they'll just print an indented tree
+of opening and closing tag names. We aren't required to put types and names in
+the signature, just like in most of Perl 6, so we'll just leave them out where
+we can:
+
+```Perl6
+my $depth = 0;
+
+sub start-element($, $elem, $)
+{
+    say "open $elem".indent($depth * 4);
+    ++$depth;
+}
+
+sub end-element($, $elem)
+{
+    --$depth;
+    say "close $elem".indent($depth * 4);
+}
+```
+
+Just wire it up with some regular NativeCallery:
+
+```Perl6
+sub XML_ParserCreate(Str --> OpaquePointer)     is native('libexpat') { ... }
+sub XML_ParserFree(OpaquePointer)               is native('libexpat') { ... }
+sub XML_Parse(OpaquePointer, Buf, int32, int32) is native('libexpat') { ... }
+
+my $xml = q:to/XML/;
+    <calendar>
+        <advent day="21">
+            <topic title="NativeCall Bits and Pieces"/>
+        </advent>
+    </calendar>
+    XML
+
+my $parser = XML_ParserCreate('UTF-8');
+XML_SetElementHandler($parser, &start-element, &end-element);
+
+my $buf = $xml.encode('UTF-8');
+XML_Parse($parser, $buf, $buf.elems, 1);
+
+XML_ParserFree($parser);
+```
+
+And magically, Expat will call our Perl 6 subroutines that will print the
+expected output:
+
+```
+open calendar
+    open advent
+        open topic
+        close topic
+    close advent
+close calendar
+```
+
 
 ## LibraryMake
+
+TODO
 
 
 ## C++
@@ -92,3 +193,8 @@ extern "C"
 See also
 [FFI::Platypus::Lang::CPP](https://metacpan.org/pod/FFI::Platypus::Lang::CPP),
 which lets you do calls to C++ directly.
+
+
+## Conclusion
+
+TODO
