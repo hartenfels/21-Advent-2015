@@ -11,7 +11,7 @@
 
 Trying to call into a C++ library isn't as straight-forward as using C, even if
 you aren't dealing with objects or anything fancy. Take this simple library
-we'll call `cpptest`:
+we'll call `cpptest`, which can holler a string to stdout:
 
 ```cpp
 #include <iostream>
@@ -33,18 +33,21 @@ You get a nasty error message like `Cannot locate symbol 'holler' in native
 library 'cpptest.so'`! Why can't Perl see the function right in front of its
 face?
 
-Well, in C++, all functions are like `multi sub`s in Perl 6, and the compiler
-figures out which one to call by mangling their name into something that has
-the argument types encoded into it. Since I compiled the library with `g++ -g`,
-I can get the symbols back out of it:
+Well, C++ allows you to create multiple functions with the same name, but
+different parameters, kinda like `multi` in Perl 6. You can't actually have
+identical names in a native library though, so the compiler instead mangles the
+function names into something that includes the argument and return types.
+Since I compiled the library with `g++ -g`, I can get the symbols back out of
+it:
 
 ```bash
 $ nm cpptest.so | grep holler
 0000000000000890 T _Z6hollerPKc
 ```
 
-Alright, so if we now tell NativeCall to use that weird gobbledegook as the
-function name instead:
+So somehow `_Z6hollerPKc` stands for “a function called holler that takes a
+`const char*` and returns `void`. Alright, so if we now tell NativeCall to use
+that weird gobbledegook as the function name instead:
 
 ```Perl6
 sub holler(Str) is native('cpptest') is symbol('_Z6hollerPKc') { ... }
