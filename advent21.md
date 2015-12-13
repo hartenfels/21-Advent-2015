@@ -69,9 +69,9 @@ sub end-element($, $elem)
 Just wire it up with some regular NativeCallery:
 
 ```Perl6
-sub XML_ParserCreate(Str --> OpaquePointer)     is native('libexpat') { ... }
-sub XML_ParserFree(OpaquePointer)               is native('libexpat') { ... }
-sub XML_Parse(OpaquePointer, Buf, int32, int32) is native('libexpat') { ... }
+sub XML_ParserCreate(Str --> OpaquePointer)               is native('libexpat') { ... }
+sub XML_ParserFree(OpaquePointer)                         is native('libexpat') { ... }
+sub XML_Parse(OpaquePointer, Buf, int32, int32 --> int32) is native('libexpat') { ... }
 
 my $xml = q:to/XML/;
     <calendar>
