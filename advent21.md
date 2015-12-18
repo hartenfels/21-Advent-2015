@@ -13,12 +13,19 @@ There have already been a pair of advent posts on NativeCall already, [one
 about the basics in 2010](https://perl6advent.wordpress.com/2010/12/15/) and
 [one about objectiness in 2011](https://perl6advent.wordpress.com/2011/12/21/).
 So this one won't repeat itself in that regard, and instead be about *Native
-Callbacks* and *using C++ libraries*.
+Callbacks* and *C++ libraries*.
 
 
 ## Callbacks
 
-TODO yadda yadda introduction function pointers etc.
+While C isn't quite as good as Perl at passing around functions as data, it
+does let you pass around pointers to functions to use them as callbacks. It's
+used extensively when dealing with event-like stuff, such as signals using
+`signal(2)`.
+
+In the NativeCall docs, there's [a short quip about
+callbacks](https://github.com/jnthn/zavolaj#function-arguments). But they can't
+be that easy, can they?
 
 Let's take [the Expat XML library](http://expat.sourceforge.net/) as an
 example, which we want to use to parse this riveting XML document:
@@ -115,6 +122,10 @@ open calendar
 close calendar
 ```
 
+So callbacks are pretty easy in the end. You can see a more involved example
+involving pretty-printing XML
+[here](https://github.com/hartenfels/21-Advent-2015/tree/master/callback).
+
 
 ## C++
 
@@ -198,11 +209,12 @@ extern "C"
 }
 ```
 
-See also
-[FFI::Platypus::Lang::CPP](https://metacpan.org/pod/FFI::Platypus::Lang::CPP),
-which lets you do calls to C++ directly.
+There's [a more involved
+example](https://github.com/hartenfels/21-Advent-2015/tree/master/cpp) again.
 
-
-## Conclusion
-
-TODO
+Some C++ libraries already provide a C wrapper like that, but in other cases
+you'll have to write your own. Check out
+[LibraryMake](https://github.com/retupmoca/P6-LibraryMake/), which can help you
+compile native code in your Perl 6 modules. There's also
+[FFI::Platypus::Lang::CPP](https://metacpan.org/pod/FFI::Platypus::Lang::CPP)
+for Perl 5, which lets you do calls to C++ in a more direct fashion.
