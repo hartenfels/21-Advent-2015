@@ -4,7 +4,7 @@ test: compile
 compile: cpptest.so cpptest-extern-c.so intvec.so
 
 %.so: %.cpp
-	g++ -Wall -Wextra -Wshadow -std=c++98 -pedantic -pedantic-errors $< -shared -g -o $@ -fPIC
+	${CXX} $< -shared -g -o $@ -fPIC
 
 clean:
 	rm *.so
