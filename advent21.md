@@ -1,6 +1,19 @@
-# Day 21
+# NativeCall-backs and Beyond C
 
-TODO: Introduction
+One of my favorite features in Perl 6 is the
+[NativeCall](http://doc.perl6.org/language/nativecall) interface, because it
+allows gluing virtually any native library into it relatively easily. There
+have even been efforts to interface with
+[other](https://github.com/niner/Inline-Perl5/)
+[scripting](https://github.com/niner/Inline-Python)
+[languages](https://github.com/hartenfels/Javascript-SpiderMonkey) so that you
+can use their libraries as well.
+
+There have already been a pair of advent posts on NativeCall already, [one
+about the basics in 2010](https://perl6advent.wordpress.com/2010/12/15/) and
+[one about objectiness in 2011](https://perl6advent.wordpress.com/2011/12/21/).
+So this one won't repeat itself in that regard, and instead be about *Native
+Callbacks* and *using C++ libraries*.
 
 
 ## Callbacks
@@ -101,11 +114,6 @@ open calendar
     close advent
 close calendar
 ```
-
-
-## LibraryMake
-
-TODO
 
 
 ## C++
