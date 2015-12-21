@@ -30,7 +30,7 @@ be that easy, can they?
 Let's take [the Expat XML library](http://expat.sourceforge.net/) as an
 example, which we want to use to parse this riveting XML document:
 
-```XML
+```
 <calendar>
     <advent day="21">
         <topic title="NativeCall Bits and Pieces"/>
@@ -42,7 +42,7 @@ The Expat XML parser takes callbacks that are called whenever it finds and
 opening or closing XML tag. You tell it which callbacks to use with the
 following function:
 
-```c
+```
 XML_SetElementHandler(XML_Parser parser,
                       void (*start)(void *userdata, char *name, char **attrs),
                       void (*end)(void* userdata, char *name));
@@ -52,7 +52,7 @@ It associates the given parser with two function pointers to the start and end
 tag handlers. Turning this into a Perl 6 NativeCall subroutine is
 straight-forward:
 
-```Perl6
+```
 use NativeCall;
 
 sub XML_SetElementHandler(OpaquePointer $parser,
@@ -70,7 +70,7 @@ of opening and closing tag names. We aren't required to put types and names in
 the signature, just like in most of Perl 6, so we'll just leave them out where
 we can:
 
-```Perl6
+```
 my $depth = 0;
 
 sub start-element($, $elem, $)
@@ -88,7 +88,7 @@ sub end-element($, $elem)
 
 Just wire it up with some regular NativeCallery:
 
-```Perl6
+```
 sub XML_ParserCreate(Str --> OpaquePointer)               is native('libexpat') { ... }
 sub XML_ParserFree(OpaquePointer)                         is native('libexpat') { ... }
 sub XML_Parse(OpaquePointer, Buf, int32, int32 --> int32) is native('libexpat') { ... }
@@ -133,7 +133,7 @@ Trying to call into a C++ library isn't as straight-forward as using C, even if
 you aren't dealing with objects or anything fancy. Take this simple library
 we'll call `cpptest`, which can holler a string to stdout:
 
-```cpp
+```
 #include <iostream>
 
 void holler(const char* str)
@@ -144,7 +144,7 @@ void holler(const char* str)
 
 When you try to unsuspectingly call this function with NativeCall:
 
-```Perl6
+```
 sub holler(Str) is native('cpptest') { ... }
 holler('Hello World');
 ```
@@ -169,7 +169,7 @@ So somehow `_Z6hollerPKc` stands for “a function called holler that takes a
 `const char*` and returns `void`. Alright, so if we now tell NativeCall to use
 that weird gobbledegook as the function name instead:
 
-```Perl6
+```
 sub holler(Str) is native('cpptest') is symbol('_Z6hollerPKc') { ... }
 ```
 
@@ -180,7 +180,7 @@ the name would be something like `?holler@@ZAX?BPDXZ` instead.
 
 The proper solution is to wrap your function like so:
 
-```cpp
+```
 extern "C"
 {
     void holler(const char* str)
@@ -198,7 +198,7 @@ You still can't directly call into classes or objects like this, which you
 probably would want to do when you're thinking about NativeCalling into C++,
 but wrapping the methods works just fine:
 
-```cpp
+```
 #include <vector>
 
 extern "C"
@@ -218,3 +218,18 @@ you'll have to write your own. Check out
 compile native code in your Perl 6 modules. There's also
 [FFI::Platypus::Lang::CPP](https://metacpan.org/pod/FFI::Platypus::Lang::CPP)
 for Perl 5, which lets you do calls to C++ in a more direct fashion.
+
+**Update:** as [tleich](http://usev5.wordpress.com/) points out in the
+[comments](https://perl6advent.wordpress.com/2015/12/21/day-21-nativecall-backs-and-beyond-c/#comment-14510),
+there is an `is mangled` attribute for mangling C++ function names. So you
+might be able to call the pure C++ function after all and have NativeCall
+mangle it for you like your compiler would do – if your compiler is g++ or
+Microsoft Visual C++:
+
+```
+sub holler(Str) is native('cpptest') is mangled { ... }
+holler('Hello World');
+```
+
+It doesn't seem to be working for me though and fails with a `don't know how to
+mangle symbol` error. I'll amend this post again if I can get it running.
