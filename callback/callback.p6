@@ -1,14 +1,14 @@
 #!/usr/bin/env perl6
 use NativeCall;
 
-sub XML_ParserCreate(Str --> OpaquePointer)               is native('libexpat') { ... }
-sub XML_ParserFree(OpaquePointer)                         is native('libexpat') { ... }
-sub XML_Parse(OpaquePointer, Buf, int32, int32 --> int32) is native('libexpat') { ... }
+sub XML_ParserCreate(Str --> OpaquePointer)               is native('expat') { ... }
+sub XML_ParserFree(OpaquePointer)                         is native('expat') { ... }
+sub XML_Parse(OpaquePointer, Buf, int32, int32 --> int32) is native('expat') { ... }
 
 sub XML_SetElementHandler(OpaquePointer $parser,
                           &start (OpaquePointer, Str, CArray[Str]),
                           &end   (OpaquePointer, Str))
-    is native('libexpat') { ... }
+    is native('expat') { ... }
 
 
 my $depth = 0;

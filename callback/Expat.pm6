@@ -4,20 +4,20 @@ use NativeCall;
 
 class XML is repr('CPointer') {}
 
-sub XML_ParserCreate(Str --> XML)   is native('libexpat') { ... }
-sub XML_ParserFree(XML)             is native('libexpat') { ... }
-sub XML_GetErrorCode(XML --> int32) is native('libexpat') { ... }
-sub XML_ErrorString(int32 --> Str)  is native('libexpat') { ... }
+sub XML_ParserCreate(Str --> XML)   is native('expat') { ... }
+sub XML_ParserFree(XML)             is native('expat') { ... }
+sub XML_GetErrorCode(XML --> int32) is native('expat') { ... }
+sub XML_ErrorString(int32 --> Str)  is native('expat') { ... }
 
 sub XML_Parse(XML, Buf, int32, int32 --> int32)
-    is native('libexpat') { ... }
+    is native('expat') { ... }
 
 sub XML_SetElementHandler(XML, & (OpaquePointer, Str, CArray[Str]),
                                & (OpaquePointer, Str))
-    is native('libexpat') { ... }
+    is native('expat') { ... }
 
 sub XML_SetCharacterDataHandler(XML, & (OpaquePointer, CArray[int8], int32))
-    is native('libexpat') { ... }
+    is native('expat') { ... }
 
 
 sub start($parser, $, $elem, $attrs)

@@ -1,9 +1,9 @@
 test: compile
 	LD_LIBRARY_PATH=. PERL6LIB=. prove -e perl6 cpp.t
 
-compile: cpptest.so cpptest-extern-c.so intvec.so
+compile: libcpptest.so libcpptest-extern-c.so libintvec.so
 
-%.so: %.cpp
+lib%.so: %.cpp
 	${CXX} $< -shared -g -o $@ -fPIC
 
 clean:

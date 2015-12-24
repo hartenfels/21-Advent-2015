@@ -58,7 +58,7 @@ use NativeCall;
 sub XML_SetElementHandler(OpaquePointer $parser,
                           &start (OpaquePointer, Str, CArray[Str]),
                           &end   (OpaquePointer, Str))
-    is native('libexpat') { ... }
+    is native('expat') { ... }
 ```
 
 As you can see, the function pointers turn into arguments with the `&` sigil,
@@ -89,9 +89,9 @@ sub end-element($, $elem)
 Just wire it up with some regular NativeCallery:
 
 ```
-sub XML_ParserCreate(Str --> OpaquePointer)               is native('libexpat') { ... }
-sub XML_ParserFree(OpaquePointer)                         is native('libexpat') { ... }
-sub XML_Parse(OpaquePointer, Buf, int32, int32 --> int32) is native('libexpat') { ... }
+sub XML_ParserCreate(Str --> OpaquePointer)               is native('expat') { ... }
+sub XML_ParserFree(OpaquePointer)                         is native('expat') { ... }
+sub XML_Parse(OpaquePointer, Buf, int32, int32 --> int32) is native('expat') { ... }
 
 my $xml = q:to/XML/;
     <calendar>
@@ -219,7 +219,7 @@ compile native code in your Perl 6 modules. There's also
 [FFI::Platypus::Lang::CPP](https://metacpan.org/pod/FFI::Platypus::Lang::CPP)
 for Perl 5, which lets you do calls to C++ in a more direct fashion.
 
-**Update:** as [tleich](http://usev5.wordpress.com/) points out in the
+**Update on 2015-12-22:** as [tleich](http://usev5.wordpress.com/) points out in the
 [comments](https://perl6advent.wordpress.com/2015/12/21/day-21-nativecall-backs-and-beyond-c/#comment-14510),
 there is an `is mangled` attribute for mangling C++ function names. So you
 might be able to call the pure C++ function after all and have NativeCall
@@ -233,3 +233,11 @@ holler('Hello World');
 
 It doesn't seem to be working for me though and fails with a `don't know how to
 mangle symbol` error. I'll amend this post again if I can get it running.
+
+**Update on 2015-12-23:** the NativeCall API has changed (thanks to [jczeus for
+pointing it
+out](https://perl6advent.wordpress.com/2015/12/21/day-21-nativecall-backs-and-beyond-c/#comment-14526)
+and now automatically adds a `lib` prefix to library names. The code changed
+from `is native('libexpat')` to `is native('expat')`. It will also complain
+that a version should be added to the library name, but I don't want to weld
+this code to an exact version of the used libraries.
